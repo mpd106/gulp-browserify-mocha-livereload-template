@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Test</title>
+    <link rel="stylesheet" href="lib/mocha.css"/>
+  </head>
+  <body>
+    <div id="mocha"></div>
+    <script type="application/javascript" src="./lib/mocha.js"></script>
+    <script type="application/javascript">mocha.setup('bdd');</script>
+    <script type="application/javascript" src="../build/test/dest.js"></script>
+    <script type="application/javascript">mocha.run()</script>
+  </body>
+</html>
