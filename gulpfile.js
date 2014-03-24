@@ -25,8 +25,7 @@ var setupScripts = function(scriptsName, scriptsPaths, destinationFolder, destin
     gulp.task(scriptsName, function() {  
     gulp.src(scriptsPaths)
         .pipe(browserify({
-            debug : !gulp.env.production,
-            'ignoreMissing': true
+            debug : !gulp.env.production
         }))
         .on('error', handleError)
         .pipe(concat(destinationFolder))
