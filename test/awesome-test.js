@@ -8,6 +8,6 @@ describe("Test case", function() {
     });
     
     it("should do something else", function() {
-        var result = awesome.ass(10, 100);
+        var result = awesome.add(12, 100);
     });
 });
