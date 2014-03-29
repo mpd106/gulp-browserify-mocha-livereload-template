@@ -8,7 +8,7 @@ var livereload = require('gulp-livereload');
 var scripts = {
     src:  {
         name: 'scripts',
-        entry: ['src/app.js'],
+        entry: 'src/js/app.js',
         paths: ['src/**/*.js'],
         outFolder: 'build',
         outFile: 'dest.js'
@@ -16,7 +16,7 @@ var scripts = {
     test: {
         name: 'scripts-test',
         entry: 'test/testSuite.js',
-        paths: ['test/**/*.js'],
+        paths: ['test/**/*.js', 'src/**/*.js'],
         outFolder: 'build/test',
         outFile: 'dest.js'
     }
@@ -43,7 +43,7 @@ var setupEntries = function(name, entry, destinationFolder, destinationName) {
 };
 
 var setupWatch = function(name, paths) {
-    gulp.task('watch', function() {
+    gulp.task(name + '-watch', function() {
         gulp.watch(paths, [name]);
     });
 };
@@ -64,8 +64,10 @@ var setupLiveReload = function(watchPath) {
     });
 };
 
-setup(scripts.src);
 setup(scripts.test);
+setup(scripts.src);
 setupLiveReload(reloadWatchPath);
 
-gulp.task('default', [scripts.src.name, scripts.test.name, 'watch', 'reload']);
+gulp.task('default', [scripts.src.name, scripts.test.name,
+                      scripts.src.name + '-watch',
+                      scripts.test.name + '-watch', 'reload']);
