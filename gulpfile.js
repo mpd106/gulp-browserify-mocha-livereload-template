@@ -8,38 +8,64 @@ var livereload = require('gulp-livereload');
 var scripts = {
     src:  {
         name: 'scripts',
-        paths: ['src/**/*.js']
+        entry: ['src/app.js'],
+        paths: ['src/**/*.js'],
+        outFolder: 'build',
+        outFile: 'dest.js'
     },
     test: {
         name: 'scripts-test',
-        paths: ['test/*.js']
+        entry: 'test/testSuite.js',
+        paths: ['test/**/*.js'],
+        outFolder: 'build/test',
+        outFile: 'dest.js'
     }
 };
+
+var reloadWatchPath = 'build/**';
 
 var handleError = function(error) {
     console.log(error.toString());
     this.emit('end');
 };
 
-var setupScripts = function(scriptsName, scriptsPaths, destinationFolder, destinationName) {
-    gulp.task(scriptsName, function() {  
-    gulp.src(scriptsPaths)
+var setupEntries = function(name, entry, destinationFolder, destinationName) {
+    gulp.task(name, function() {  
+    gulp.src(entry)
         .pipe(browserify({
-            debug : !gulp.env.production
+            debug : !gulp.env.production,
+            ignoreMissing : true
         }))
         .on('error', handleError)
         .pipe(concat(destinationFolder))
-        .pipe(gulp.dest(destinationName))
-        .pipe(livereload());
+        .pipe(gulp.dest(destinationName));
     });
 };
 
-setupScripts(scripts.src.name, scripts.src.paths, 'dest.js', 'build');
-setupScripts(scripts.test.name, scripts.test.paths, 'dest.js', 'build/test');
+var setupWatch = function(name, paths) {
+    gulp.task('watch', function() {
+        gulp.watch(paths, [name]);
+    });
+};
 
-gulp.task('watch', function() {
-    gulp.watch(scripts.src.paths, [scripts.src.name]);
-    gulp.watch(scripts.test.paths, [scripts.test.name]);
-});
+var setup = function(definition) {
+    setupEntries(definition.name, definition.entry,
+                 definition.outFile, definition.outFolder);
 
-gulp.task('default', [scripts.src.name, scripts.test.name, 'watch']);
+    setupWatch(definition.name, definition.paths);
+};
+
+var setupLiveReload = function(watchPath) {
+    gulp.task('reload', function() {
+        var server = livereload();
+        gulp.watch(watchPath).on('change', function(file) {
+            server.changed(file.path);
+        });
+    });
+};
+
+setup(scripts.src);
+setup(scripts.test);
+setupLiveReload(reloadWatchPath);
+
+gulp.task('default', [scripts.src.name, scripts.test.name, 'watch', 'reload']);
